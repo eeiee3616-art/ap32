@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AP-32 검사</title>
+  <style>
+    body{
+      font-family:sans-serif;
+      background:#f5f6fa;
+      margin:0;
+      padding:40px 20px;
+      text-align:center;
+    }
+    .card{
+      max-width:700px;
+      margin:0 auto;
+      background:white;
+      padding:30px 20px;
+      border-radius:16px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    }
+    h1{
+      margin-bottom:10px;
+    }
+    .progress{
+      margin-bottom:20px;
+      color:#666;
+      font-size:14px;
+    }
+    .question{
+      font-size:24px;
+      font-weight:700;
+      margin-bottom:15px;
+    }
+    .desc{
+      font-size:18px;
+      margin-bottom:30px;
+      line-height:1.6;
+    }
+    button{
+      width:100%;
+      max-width:420px;
+      padding:16px;
+      margin:10px auto;
+      display:block;
+      font-size:18px;
+      border:none;
+      border-radius:10px;
+      background:#111;
+      color:white;
+      cursor:pointer;
+    }
+    button:hover{
+      opacity:0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="progress" id="progress">1 / 1</div>
+    <div class="question" id="questionTitle">Q1</div>
+    <div class="desc" id="questionText">새로운 보드게임을 처음 하게 됐다.</div>
+
+    <button onclick="answer('A')" id="btnA">A. 규칙을 먼저 읽어본다</button>
+    <button onclick="answer('B')" id="btnB">B. 일단 해보면서 익힌다</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        title: "Q1",
+        text: "새로운 보드게임을 처음 하게 됐다.",
+        a: "A. 규칙을 먼저 읽어본다",
+        b: "B. 일단 해보면서 익힌다"
+      }
+    ];
+
+    let current = 0;
+    const answers = [];
+
+    function renderQuestion(){
+      const q = questions[current];
+      document.getElementById("progress").innerText = `${current + 1} / ${questions.length}`;
+      document.getElementById("questionTitle").innerText = q.title;
+      document.getElementById("questionText").innerText = q.text;
+      document.getElementById("btnA").innerText = q.a;
+      document.getElementById("btnB").innerText = q.b;
+    }
+
+    function answer(choice){
+      answers.push(choice);
+      current++;
+
+      if(current < questions.length){
+        renderQuestion();
+      } else {
+        alert("테스트 페이지 연결 성공. 이제 문항을 늘리면 됩니다.");
+      }
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
