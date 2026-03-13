@@ -6,97 +6,221 @@
   <title>AP-32 검사</title>
   <style>
     body{
-      font-family:sans-serif;
+      font-family: sans-serif;
       background:#f5f6fa;
       margin:0;
-      padding:40px 20px;
+      padding:30px 16px;
       text-align:center;
     }
     .card{
-      max-width:700px;
+      max-width:760px;
       margin:0 auto;
-      background:white;
-      padding:30px 20px;
-      border-radius:16px;
-      box-shadow:0 4px 20px rgba(0,0,0,0.08);
-    }
-    h1{
-      margin-bottom:10px;
+      background:#fff;
+      padding:28px 18px 24px;
+      border-radius:18px;
+      box-shadow:0 6px 24px rgba(0,0,0,0.08);
     }
     .progress{
-      margin-bottom:20px;
+      font-size:14px;
       color:#666;
+      margin-bottom:18px;
+    }
+    .bar-wrap{
+      width:100%;
+      height:10px;
+      background:#e8e8e8;
+      border-radius:999px;
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background:#111;
+      transition:width 0.25s ease;
+    }
+    .question-no{
+      font-size:34px;
+      font-weight:800;
+      margin-bottom:18px;
+    }
+    .question-text{
+      font-size:25px;
+      line-height:1.5;
+      font-weight:700;
+      margin-bottom:30px;
+      word-break:keep-all;
+    }
+    .answer-btn{
+      width:100%;
+      max-width:560px;
+      display:block;
+      margin:12px auto;
+      padding:18px 16px;
+      border:none;
+      border-radius:14px;
+      background:#111;
+      color:#fff;
+      font-size:21px;
+      line-height:1.5;
+      cursor:pointer;
+      word-break:keep-all;
+    }
+    .answer-btn:hover{
+      opacity:0.92;
+    }
+    .sub-text{
+      margin-top:18px;
+      color:#777;
       font-size:14px;
     }
-    .question{
-      font-size:24px;
-      font-weight:700;
-      margin-bottom:15px;
-    }
-    .desc{
-      font-size:18px;
-      margin-bottom:30px;
-      line-height:1.6;
-    }
-    button{
-      width:100%;
-      max-width:420px;
-      padding:16px;
-      margin:10px auto;
-      display:block;
-      font-size:18px;
-      border:none;
-      border-radius:10px;
-      background:#111;
-      color:white;
-      cursor:pointer;
-    }
-    button:hover{
-      opacity:0.9;
+    @media (max-width: 480px){
+      body{ padding:20px 12px; }
+      .card{ padding:22px 14px 20px; }
+      .question-no{ font-size:28px; }
+      .question-text{ font-size:22px; }
+      .answer-btn{ font-size:18px; padding:16px 14px; }
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="progress" id="progress">1 / 1</div>
-    <div class="question" id="questionTitle">Q1</div>
-    <div class="desc" id="questionText">새로운 보드게임을 처음 하게 됐다.</div>
+    <div class="progress" id="progressText">1 / 32</div>
+    <div class="bar-wrap">
+      <div class="bar" id="progressBar"></div>
+    </div>
 
-    <button onclick="answer('A')" id="btnA">A. 규칙을 먼저 읽어본다</button>
-    <button onclick="answer('B')" id="btnB">B. 일단 해보면서 익힌다</button>
+    <div class="question-no" id="questionNo">Q1</div>
+    <div class="question-text" id="questionText">문항 내용</div>
+
+    <button class="answer-btn" id="btnA" onclick="chooseAnswer('A')">A 선택지</button>
+    <button class="answer-btn" id="btnB" onclick="chooseAnswer('B')">B 선택지</button>
+
+    <div class="sub-text">직감적으로 고르세요.</div>
   </div>
 
   <script>
+    /*
+      =========================
+      AP-32 파일럿용 구조
+      =========================
+      - questions: 32문항
+      - axis: 내부 계산용 축 번호 (1~5)
+      - dummy: true면 더미문항, 계산 제외
+      - A/B 어느 쪽이 1인지 bitValue로 지정
+        bitValueA: A를 고르면 해당 축 값 1
+        bitValueB: B를 고르면 해당 축 값 1
+      - 최종 typeCode: 5비트 문자열 예) 10101
+    */
+
     const questions = [
-      {
-        title: "Q1",
-        text: "새로운 보드게임을 처음 하게 됐다.",
-        a: "A. 규칙을 먼저 읽어본다",
-        b: "B. 일단 해보면서 익힌다"
-      }
+      // 예시 문항들. 지금은 자리만 잡아둔 상태입니다.
+      // 사용자가 최종 32문항을 주면 이 부분만 교체하면 됩니다.
+      { no: 1,  text: "새로운 보드게임을 처음 하게 됐다.", a: "규칙을 먼저 읽어본다", b: "일단 해보면서 익힌다", axis: 1, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no: 2,  text: "여러 일이 동시에 들어왔다.", a: "하나씩 끝낸다", b: "병행하며 처리한다", axis: 2, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no: 3,  text: "새로운 프로그램을 처음 쓴다.", a: "전체 메뉴를 먼저 살펴본다", b: "이것저것 눌러보며 익힌다", axis: 3, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no: 4,  text: "문제가 생겼다.", a: "잠시 멈춰 원인을 먼저 본다", b: "진행하며 수정한다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no: 5,  text: "규칙이 정해져 있지만 다른 방식이 떠오른다.", a: "정해진 방식대로 간다", b: "다른 방식을 제안한다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 },
+
+      { no: 6,  text: "새로운 식당을 추천받았다.", a: "후기부터 찾아본다", b: "일단 가본다", axis: 1, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no: 7,  text: "취미가 재미있어졌다.", a: "더 깊게 파본다", b: "다른 취미도 함께 넓혀본다", axis: 2, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no: 8,  text: "중요한 프로젝트를 맡았다.", a: "전체 구조를 먼저 정리한다", b: "가능한 부분부터 시작한다", axis: 3, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no: 9,  text: "정보가 일부 부족하다.", a: "정보가 채워질 때까지 기다린다", b: "가능한 범위에서 시작한다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:10,  text: "해야 할 일이 겹쳤다.", a: "우선순위를 정해 처리한다", b: "상황에 따라 번갈아 처리한다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 },
+
+      { no:11, text: "처음 가는 장소다.", a: "동선을 먼저 확인한다", b: "가면서 파악한다", axis: 1, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:12, text: "아이디어가 여러 개 떠올랐다.", a: "하나를 고르고 깊게 간다", b: "여러 개를 함께 펼친다", axis: 2, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:13, text: "의견이 엇갈린다.", a: "내 기준으로 정리한다", b: "지금 상황에 맞게 조정한다", axis: 3, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:14, text: "흐름이 자꾸 바뀐다.", a: "예측 가능한 쪽이 편하다", b: "변화에 맞춰 가는 편이다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:15, text: "일정 수준까지 진행됐다.", a: "완전히 마무리한다", b: "움직이며 계속 다듬는다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 },
+
+      { no:16, text: "새 활동을 시작한다.", a: "익숙해질 때까지 관찰한다", b: "바로 참여해본다", axis: 1, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:17, text: "기회가 두세 개 동시에 보인다.", a: "한 방향을 먼저 민다", b: "여러 방향을 동시에 시도한다", axis: 2, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:18, text: "선택 기준을 잡아야 한다.", a: "내가 납득하는 게 먼저다", b: "현실 조건을 먼저 본다", axis: 3, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:19, text: "대화 중 분위기가 바뀌었다.", a: "원래 흐름을 유지한다", b: "상황에 맞게 톤을 바꾼다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:20, text: "맡은 일이 거의 끝나간다.", a: "닫을 때까지 마무리한다", b: "다음 흐름까지 같이 본다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 },
+
+      { no:21, text: "처음 해보는 앱을 깔았다.", a: "설정부터 확인한다", b: "일단 눌러보며 익힌다", axis: 1, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:22, text: "가능성이 넓어 보인다.", a: "하나를 깊게 키운다", b: "여러 가능성을 같이 움직인다", axis: 2, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:23, text: "판단해야 할 일이 생겼다.", a: "내 기준이 우선이다", b: "상황을 보고 바꿀 수 있다", axis: 3, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:24, text: "불확실한 요소가 생겼다.", a: "안정적인 쪽이 낫다", b: "해보면서 조정할 수 있다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:25, text: "일이 진행 중이다.", a: "완결 지점을 먼저 본다", b: "흐름 속에서 계속 손본다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 },
+
+      { no:26, text: "새로운 모임에 갔다.", a: "흐름을 먼저 본다", b: "먼저 끼어들며 움직인다", axis: 1, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:27, text: "시간이 조금 남는다.", a: "하던 걸 더 깊게 한다", b: "다른 것도 함께 해본다", axis: 2, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:28, text: "방향을 정해야 한다.", a: "내 판단을 따른다", b: "주변 조건을 반영한다", axis: 3, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:29, text: "계획이 흐트러졌다.", a: "예상 범위 안으로 다시 정리한다", b: "바뀐 흐름에 맞춰 수정한다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:30, text: "끝내야 할 일이 남았다.", a: "책임지고 마무리한다", b: "진행하면서 마무리 감각을 맞춘다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 },
+
+      // 더미문항 2개
+      { no:31, text: "주말에 시간이 비었다.", a: "집에서 쉬는 편이다", b: "밖에 나가는 편이다", axis: 0, dummy: true, bitValueA: 0, bitValueB: 0 },
+      { no:32, text: "음식을 고를 때", a: "익숙한 메뉴가 편하다", b: "새 메뉴를 시도해본다", axis: 0, dummy: true, bitValueA: 0, bitValueB: 0 }
     ];
 
-    let current = 0;
+    let currentIndex = 0;
     const answers = [];
 
-    function renderQuestion(){
-      const q = questions[current];
-      document.getElementById("progress").innerText = `${current + 1} / ${questions.length}`;
-      document.getElementById("questionTitle").innerText = q.title;
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById("progressText").innerText = `${currentIndex + 1} / ${questions.length}`;
+      document.getElementById("progressBar").style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
+      document.getElementById("questionNo").innerText = `Q${q.no}`;
       document.getElementById("questionText").innerText = q.text;
-      document.getElementById("btnA").innerText = q.a;
-      document.getElementById("btnB").innerText = q.b;
+      document.getElementById("btnA").innerText = `A. ${q.a}`;
+      document.getElementById("btnB").innerText = `B. ${q.b}`;
     }
 
-    function answer(choice){
-      answers.push(choice);
-      current++;
+    function chooseAnswer(choice) {
+      const q = questions[currentIndex];
+      answers.push({
+        no: q.no,
+        axis: q.axis,
+        dummy: q.dummy,
+        choice: choice
+      });
 
-      if(current < questions.length){
+      currentIndex++;
+
+      if (currentIndex < questions.length) {
         renderQuestion();
       } else {
-        alert("테스트 페이지 연결 성공. 이제 문항을 늘리면 됩니다.");
+        finishTest();
       }
+    }
+
+    function finishTest() {
+      const axisScores = {
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: []
+      };
+
+      for (const ans of answers) {
+        const q = questions.find(item => item.no === ans.no);
+        if (q.dummy) continue;
+
+        if (ans.choice === "A") axisScores[q.axis].push(q.bitValueA);
+        if (ans.choice === "B") axisScores[q.axis].push(q.bitValueB);
+      }
+
+      let typeCode = "";
+
+      for (let axis = 1; axis <= 5; axis++) {
+        const arr = axisScores[axis];
+        const sum = arr.reduce((a, b) => a + b, 0);
+        const bit = sum >= (arr.length / 2) ? 1 : 0;
+        typeCode += String(bit);
+      }
+
+      localStorage.setItem("ap32_answers", JSON.stringify(answers));
+      localStorage.setItem("ap32_type_code", typeCode);
+
+      alert(`검사가 완료되었습니다.\n결과 코드: ${typeCode}`);
+
+      // 다음 단계에서 result.html 만들면 이걸로 연결
+      // location.href = "result.html";
     }
 
     renderQuestion();
