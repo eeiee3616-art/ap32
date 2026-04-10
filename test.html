@@ -156,8 +156,8 @@
       { no:29, text: "한 번 본 영화나 드라마를 다시 볼 때.", a: "새로운 것을 보는 편이 좋다", b: "좋아하는 작품은 여러 번 봐도 괜찮다", axis: 0, dummy: true, bitValueA: 0, bitValueB: 1 },
       { no:30, text: "자신의 생각과 다른 의견이 제시된다.", a: "제시된 의견을 따른다", b: "자신의 의견을 제시한다", axis: 3, dummy: false, bitValueA: 0, bitValueB: 1 },
 
-      { no:31, text: "처음 가보는 장소로 여행할 때 나는.", a: "미리 경로와 시간을 확인하고 계획을 세운다", b: "대략적인 방향만 정하고 상황에 맞게 움직인다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 0 },
-      { no:32, text: "함께 하기로 한 사람이 아직 확답을 주지 않았다.", a: "확답을 받을 때까지 기다린다", b: "확답 없이도 준비를 시작한다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 0 }
+      { no:31, text: "처음 가보는 장소로 여행할 때 나는.", a: "미리 경로와 시간을 확인하고 계획을 세운다", b: "대략적인 방향만 정하고 상황에 맞게 움직인다", axis: 4, dummy: false, bitValueA: 0, bitValueB: 1 },
+      { no:32, text: "함께 하기로 한 사람이 아직 확답을 주지 않았다.", a: "확답을 받을 때까지 기다린다", b: "확답 없이도 준비를 시작한다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 }
     ];
 
     questions = [...questions].sort((a, b) => a.no - b.no);
@@ -234,7 +234,7 @@
       localStorage.setItem("ap32_answers", JSON.stringify(answers));
       localStorage.setItem("ap32_type_code", typeCode);
 
-      alert(`검사가 완료되었습니다.\n결과 코드: ${typeCode}`);
+      location.href = 'result.html?code=${typeCode}`);
     }
 
     renderQuestion();
