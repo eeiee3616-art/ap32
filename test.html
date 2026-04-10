@@ -69,24 +69,6 @@
     .answer-btn:hover{
       opacity:0.92;
     }
-    .back-btn{
-      width:100%;
-      max-width:560px;
-      display:block;
-      margin:12px auto 0;
-      padding:16px 14px;
-      border:none;
-      border-radius:14px;
-      background:#666;
-      color:#fff;
-      font-size:18px;
-      line-height:1.4;
-      cursor:pointer;
-    }
-    .back-btn:disabled{
-      opacity:0.45;
-      cursor:default;
-    }
     .sub-text{
       margin-top:18px;
       color:#777;
@@ -98,7 +80,6 @@
       .question-no{ font-size:28px; }
       .question-text{ font-size:22px; }
       .answer-btn{ font-size:18px; padding:16px 14px; }
-      .back-btn{ font-size:16px; padding:14px 12px; }
     }
   </style>
 </head>
@@ -114,8 +95,8 @@
 
     <button class="answer-btn" id="btnA" onclick="chooseAnswer('A')">A 선택지</button>
     <button class="answer-btn" id="btnB" onclick="chooseAnswer('B')">B 선택지</button>
-    
-    <div class="sub-text">편안한 방법을 고르세요 </div>
+
+    <div class="sub-text">편안한 방법을 고르세요</div>
   </div>
 
   <script>
@@ -160,14 +141,11 @@
       { no:32, text: "함께 하기로 한 사람이 아직 확답을 주지 않았다.", a: "확답을 받을 때까지 기다린다", b: "확답 없이도 준비를 시작한다", axis: 5, dummy: false, bitValueA: 0, bitValueB: 1 }
     ];
 
-    questions = [...questions].sort((a, b) => a.no - b.no);
-
     let currentIndex = 0;
     const answers = new Array(questions.length).fill(null);
 
     function renderQuestion() {
       const q = questions[currentIndex];
-
       document.getElementById("progressText").innerText = `${currentIndex + 1} / ${questions.length}`;
       document.getElementById("progressBar").style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
       document.getElementById("questionNo").innerText = `Q${q.no}`;
@@ -192,13 +170,6 @@
         renderQuestion();
       } else {
         finishTest();
-      }
-    }
-
-    function goPrev() {
-      if (currentIndex > 0) {
-        currentIndex--;
-        renderQuestion();
       }
     }
 
@@ -233,7 +204,7 @@
       localStorage.setItem("ap32_answers", JSON.stringify(answers));
       localStorage.setItem("ap32_type_code", typeCode);
 
-      location.href = 'result.html?code=${typeCode}`;
+      location.href = `result.html?code=${typeCode}`;
     }
 
     renderQuestion();
