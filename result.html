@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AP-32 결과</title>
+</head>
+<body style="max-width:600px; margin:auto; padding:20px; line-height:1.6; font-family:sans-serif;">
+
+  <h1>AP-32 결과</h1>
+  <div id="result"></div>
+
+  <br>
+  <a href="index.html" style="
+    display:inline-block;
+    padding:12px 20px;
+    background:#111;
+    color:#fff;
+    text-decoration:none;
+    border-radius:8px;
+  ">홈으로</a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code") || localStorage.getItem("ap32_type_code") || "00000";
+
+    document.getElementById("result").innerHTML = `
+      <h2>당신의 결과 코드: ${code}</h2>
+      <p>여기에 ${code} 결과 내용을 연결하면 됩니다.</p>
+    `;
+  </script>
+</body>
+</html>
