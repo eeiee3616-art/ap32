@@ -193,14 +193,18 @@
       }
 
       let typeCode = "";
+      typeCode += getBit(axisScores[5]); // 시작
+      ypeCode += getBit(axisScores[2]); // 에너지
+      typeCode += getBit(axisScores[3]); // 판단 기준
+      typeCode += getBit(axisScores[4]); // 환경 반응
+      typeCode += getBit(axisScores[1]); // 실행 리듬
 
-      for (let axis = 1; axis <= 5; axis++) {
-        const arr = axisScores[axis];
-        const sum = arr.reduce((a, b) => a + b, 0);
-        const bit = sum >= (arr.length / 2) ? 1 : 0;
-        typeCode += String(bit);
-      }
+      function getBit(arr) {
+  const sum = arr.reduce((a, b) => a + b, 0);
+  return sum >= (arr.length / 2) ? 1 : 0;
+}
 
+    
       localStorage.setItem("ap32_answers", JSON.stringify(answers));
       localStorage.setItem("ap32_type_code", typeCode);
 
