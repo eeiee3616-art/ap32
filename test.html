@@ -174,7 +174,6 @@
       document.getElementById("questionText").innerText = q.text;
       document.getElementById("btnA").innerText = `A. ${q.a}`;
       document.getElementById("btnB").innerText = `B. ${q.b}`;
-      document.getElementById("prevBtn").disabled = currentIndex === 0;
     }
 
     function chooseAnswer(choice) {
@@ -234,7 +233,7 @@
       localStorage.setItem("ap32_answers", JSON.stringify(answers));
       localStorage.setItem("ap32_type_code", typeCode);
 
-      location.href = 'result.html?code=${typeCode}`);
+      location.href = 'result.html?code=${typeCode}`;
     }
 
     renderQuestion();
